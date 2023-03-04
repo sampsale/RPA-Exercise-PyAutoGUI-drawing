@@ -2,7 +2,7 @@ import pyautogui
 
 def selectBrushTool():
     try:
-        penciltool = pyautogui.locateOnScreen('brush.png')
+        penciltool = pyautogui.locateOnScreen('referenceimages/brushtool.png', confidence=0.8)
         # If the icon is found, set the mouse to the center of the icon and click
         x, y, wid, hei = penciltool
         x += wid//2
@@ -17,7 +17,7 @@ def selectBrushTool():
 def selectSquareTool():
     try:
         # Find the rectangle tool and click it
-        location = pyautogui.locateOnScreen('rectangle.png')
+        location = pyautogui.locateOnScreen('referenceimages/rectangletool.png', confidence=0.8)
         x, y, wid, hei = location
         x += wid//2
         y += hei//2
@@ -25,4 +25,7 @@ def selectSquareTool():
         pyautogui.click()
     except:
         print('Could not find square tool icon')
+    
+
+
     
