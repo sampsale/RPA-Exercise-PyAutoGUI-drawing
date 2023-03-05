@@ -1,7 +1,7 @@
 import pyautogui
 import random
-from toolselectors import selectBrushTool, selectSquareTool
-import time
+from toolselectors import selectBrushTool, selectSquareTool, selectTypeTool
+from canvasruiners  import draw_number_on_canvas, write_number_on_square, messUpTheCanvas
 # Activate failsafe to interrupt if needed
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.5
@@ -9,7 +9,8 @@ pyautogui.PAUSE = 0.5
 squaresize = 150
 # Init these for pyautogui
 screenwidth, screenheight = pyautogui.size()
-
+# Method to use to mess up the canvas
+method = input('\n\tSelect method to mess up the canvas (1=write_number_on_square, 2=draw_number_on_canvas, 3=messUpTheCanvas): \n\n\t')
 
 # Simplest strategy to open Paint
 def openMSPaint():
@@ -21,6 +22,7 @@ def openMSPaint():
     pyautogui.hotkey('win', 'up')
     drawSquares()
 
+
 # Open Paint with image recognition
 def openMSPaintWithImageRecognition():
     # Press windows key, type paint
@@ -28,7 +30,8 @@ def openMSPaintWithImageRecognition():
     pyautogui.typewrite('Paint', 0.1)
     # Try to find the paint icon
     try:
-        location = pyautogui.locateOnScreen('referenceimages/paint.png', confidence=0.8)
+        location = pyautogui.locateOnScreen(
+            'referenceimages/paint.png', confidence=0.8)
         # If the icon is found, set the mouse to the center of the icon and click
         x, y, wid, hei = location
         x += wid//2
@@ -44,17 +47,18 @@ def openMSPaintWithImageRecognition():
 
 def locateCanvas():
     # Locate canvas
-    location = pyautogui.locateOnScreen('referenceimages/canvas.png', confidence=0.8)
+    location = pyautogui.locateOnScreen(
+        'referenceimages/canvas.png', confidence=0.8)
     return location
 
 
 def drawSquares():
+    # locate canvas
+    canvaslocation = locateCanvas()
     # maximize window if not maximized
     pyautogui.hotkey('wind', 'up')
     # Select square tool
     selectSquareTool()
-    # Locate canvas
-    canvaslocation = locateCanvas()
 
     # Get square startpoints
     squarestartpoints = generateSquares(canvaslocation)
@@ -66,30 +70,32 @@ def drawSquares():
         if index == 0:
             print('Index is 0, taking screenshot of square')
             # MOVE CURSOR OUT OF CANVAS AND CLICK SO LATEST SQUARE IS DESELECTED (selection gives it a different look)
-            pyautogui.moveTo(canvaslocation[0] + canvaslocation[2], canvaslocation[3]//2)
+            pyautogui.moveTo(
+                canvaslocation[0] + canvaslocation[2], canvaslocation[3]//2)
             pyautogui.click()
             screenshot = pyautogui.screenshot(
                 region=(i[0], i[1], squaresize, squaresize))
             screenshot.save('referenceimages/screenshot_of_square.png')
 
     # MOVE CURSOR OUT OF CANVAS AND CLICK SO LATEST SQUARE IS DESELECTED (selection gives it a different look)
-    pyautogui.moveTo(canvaslocation[0] + canvaslocation[2], canvaslocation[3]//2)
+    pyautogui.moveTo(canvaslocation[0] +
+                     canvaslocation[2], canvaslocation[3]//2)
     pyautogui.click()
 
     locateAndCountSquares(canvaslocation)
 
 
 def generateSquares(canvaslocation):
-    
+
     # Init list of existing squares. Also get the amount of squares (2-5)
     squarestartpoints = []
     amount_of_squares = random.randrange(2, 6)
     # Get the possible locations for the squares
-    # Safetymargins are added to prevent the squares from being drawn right at the border of the canvas. This wont cause problems for image recognition but is done for aestethic reasons :D 
+    # Safetymargins are added to prevent the squares from being drawn right at the border of the canvas. This wont cause problems for image recognition but is done for aestethic reasons :D
     safetymargins = 10
     x, y = canvaslocation[0] + safetymargins, canvaslocation[1] + safetymargins
-    maxx = canvaslocation[2] -  safetymargins - squaresize
-    maxy = canvaslocation[3] -  safetymargins - squaresize
+    maxx = canvaslocation[2] - safetymargins - squaresize
+    maxy = canvaslocation[3] - safetymargins - squaresize
     # Console logs for debugging
     print('Number of squares:', amount_of_squares)
     print('Canvas specs', canvaslocation)
@@ -98,16 +104,16 @@ def generateSquares(canvaslocation):
     print('x', x, 'y', y)
 
     # minimum distance between squares (10 px)
-    min_distance = squaresize + 20
+    min_distance = squaresize + 10
 
     # Loop through the amount of squares and generate random startpoints for the squares
     while len(squarestartpoints) < amount_of_squares:
-        
+
         squarestartpointx = random.randrange(
             x, maxx)
         squarestartpointy = random.randrange(
             y, maxy)
-
+        
         # if the list is empty, append the first square
         if len(squarestartpoints) == 0:
             squarestartpoints.append((squarestartpointx, squarestartpointy))
@@ -126,53 +132,50 @@ def generateSquares(canvaslocation):
             if is_far_enough:
                 squarestartpoints.append(
                     (squarestartpointx, squarestartpointy))
-    print(squarestartpoints)
+    print('Generated squares: ', squarestartpoints)
     return squarestartpoints
 
 
 def locateAndCountSquares(canvaslocation):
     # Locate squares, count them, and print the total number
-    squares = pyautogui.locateAllOnScreen('referenceimages/screenshot_of_square.png')
-    totalnumber = sum(1 for square in squares)
+    squares = list(pyautogui.locateAllOnScreen(
+        'referenceimages/screenshot_of_square.png'))
+    totalnumber = len(squares)
 
     if totalnumber > 0:
-        # if squares found, mess up the canvas
-        openNotePadAndType('TOTAL NUMBER OF SQUARES DETECTED: ' + str(totalnumber))   
+        # if squares found, draw on squares and count them again
+        #openNotePadAndType('TOTAL NUMBER OF SQUARES DETECTED: ' + str(totalnumber))
         print('\n\nTOTAL NUMBER OF SQUARES DETECTED: ', totalnumber)
-        messUpTheCanvas(canvaslocation)
+        
+        # Loop thorugh all the squares and type the number on them
+        if method == str(1):
+            selectTypeTool()
+            for index, squarelocation in enumerate(squares):
+                write_number_on_square(index+1, squarelocation, squaresize)
+            locateAndCountSquares(canvaslocation)
+        # Loop through all the found squares and send to draw number function
+        if method == str(2):
+            selectBrushTool()
+            for index, squarelocation in enumerate(squares):
+                draw_number_on_canvas(
+                    index+1, [squarelocation[0], squarelocation[1]], squaresize)
+            locateAndCountSquares(canvaslocation)
+        # Mess up the canvas and count the squares again
+        if method == str(3):
+            openNotePadAndType('TOTAL NUMBER OF SQUARES DETECTED: ' + str(totalnumber))   
+            print('\n\nTOTAL NUMBER OF SQUARES DETECTED: ', totalnumber)
+            messUpTheCanvas(canvaslocation, squaresize)
+            locateAndCountSquares(canvaslocation)
+
     else:
         # if no squares found, close paint
-        openNotePadAndType('NO SQUARES FOUND AFTER MESSING UP THE CANVAS, CLOSING PAINT')   
+        openNotePadAndType(
+            'NO SQUARES FOUND AFTER DRAWING/TYPING ON THEM, CLOSING PAINT')
         print('NO SQUARES FOUND AFTER MESSING UP THE CANVAS, CLOSING PAINT\n\n')
         pyautogui.hotkey('alt', 'f4')
         pyautogui.press('right')
-        pyautogui.press('enter')    
+        pyautogui.press('enter')
 
-
-def messUpTheCanvas(canvaslocation):
-    # Get the canvas in the same way we got the squares
-    safetymargins = 10
-    x, y = canvaslocation[0], canvaslocation[1]
-    maxx = canvaslocation[2] - squaresize - safetymargins
-    maxy = canvaslocation[3]
-
-    # Select brush tool
-    selectBrushTool()
-    # Move to the top-left corner of the canvas
-    pyautogui.moveTo(x + safetymargins, y + safetymargins)
-
-    # Draw lines from left to right, covering the whole screen
-    # Subtract randomint(5-15) from range step to make sure all squares are covered (in rare borderline cases the lines would perfectly overlap with the squares's borders, messing up the image recognition). Randomness also makes sure the lines are not identical if this function has to be run more than once (if squares are still detected).
-    randomness = random.randint(5,15)
-    for i in range(safetymargins, maxy, (squaresize-randomness)):
-        pyautogui.dragTo(maxx + safetymargins + squaresize, y + i, button='left')
-        # If the end of the canvas is reached, break the loop
-        if y+i > maxy:
-            break
-        pyautogui.moveTo(x + safetymargins, y + i + squaresize-randomness)
-
-    # Return to counting the squares
-    locateAndCountSquares(canvaslocation)
 
 # Function to type messages to notepad
 def openNotePadAndType(message):
@@ -185,7 +188,8 @@ def openNotePadAndType(message):
     # Close notepad
     pyautogui.hotkey('alt', 'f4')
     pyautogui.press('right')
-    pyautogui.press('enter') 
+    pyautogui.press('enter')
+
 
 # Start the program, use either openMSPaint() or openMSPaintWithImageRecognition()
 # openMSPaintWithImageRecognition()

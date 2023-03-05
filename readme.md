@@ -1,7 +1,3 @@
-Consult the PDF for specific instructions
+## PyAutoGui testing
 
-Basic pipeline for this is:
-
-openMSPaint() -> drawSquares() -> locateAndCountSquares() -> messUpTheCanvas() -> if total number of detected squares = 0 -> alt+f4 out of the program
-
-ChatGPT was used for messUpTheCanvas function. Images of conversation with it are attached.
+The purpose of this program is to 1. open pain draw squares randomly on MSpaint canvas 2. count them by image recognition 3. draw something on the canvas so the squares become unrecognizible 4. try to count them again 5. if count unsuccessful, close paint. 

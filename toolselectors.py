@@ -28,4 +28,15 @@ def selectSquareTool():
     
 
 
-    
+def selectTypeTool():
+    try:
+        typetool = pyautogui.locateOnScreen('referenceimages/typetool.png', confidence=0.8)
+        # If the icon is found, set the mouse to the center of the icon and click
+        x, y, wid, hei = typetool
+        x += wid//2
+        y += hei//2
+        pyautogui.moveTo(x, y, duration=0.1)
+        # Click twice to select
+        pyautogui.click()
+    except:
+        print('Could not find brush icon')
