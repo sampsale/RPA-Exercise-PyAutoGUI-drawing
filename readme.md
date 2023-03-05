@@ -4,6 +4,6 @@ The purpose of this program is to 1. open MSPaint 2. draw squares randomly on ca
 
 Change these global variables if you want to:
 
-squaresize: change to an integer. Default is 150
-input: change to 1, 2 or 3 depending on what method to mess up the canvas you want to use. Default is 150 (150*150 squares)
-notepad_enabled: change to False if you don't want the program to write on Notepad. Default is True
+1. **squaresize**: change to an integer. Default is 150
+2. **input**: change to 1, 2 or 3 depending on what method to mess up the canvas you want to use. Default is 150 (150*150 squares)
+3. **notepad_enabled**: change to False if you don't want the program to write on Notepad. Default is True
