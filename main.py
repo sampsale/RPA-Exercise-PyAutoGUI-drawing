@@ -1,7 +1,7 @@
 import pyautogui
 import random
 from toolselectors import selectBrushTool, selectSquareTool, selectTypeTool
-from canvasruiners  import draw_number_on_canvas, write_number_on_square, messUpTheCanvas
+from canvasruiners  import draw_number_on_canvas, write_number_on_square, mess_up_the_canvas
 
 # Activate failsafe to interrupt if needed
 pyautogui.FAILSAFE = True
@@ -9,7 +9,10 @@ pyautogui.PAUSE = 0.5
 # Init these for pyautogui
 screenwidth, screenheight = pyautogui.size()
 # Method to use to mess up the canvas, change to 1, 2 or 3 if you don't want user input
-method = input('\n\tSelect method to mess up the canvas (1=write_number_on_square, 2=draw_number_on_canvas, 3=messUpTheCanvas): \n\n\t')
+method = input('\n\tSelect method to mess up the canvas (1=write_number_on_square, 2=draw_number_on_square, 3=mess_up_the_canvas): \n\n\t')
+# In case user doesn't enter a valid method, keep asking until they do
+while method != '1' and method != '2' and method != '3':
+    method = input('\tPlease select a valid method (1, 2 or 3): \n\n\t')
 # Determine if you want to use notepad for communication, change to False if you want to use the console exclusively
 notedpad_enabled = True
 # Squaresize for squares.. change this if you want larger or smaller ones
@@ -145,17 +148,16 @@ def locateAndCountSquares(canvaslocation):
         'referenceimages/screenshot_of_square.png'))
     totalnumber = len(squares)
 
+    # if squares found, draw on squares and count them again
     if totalnumber > 0:
-        # if squares found, draw on squares and count them again
         print('\n\nTOTAL NUMBER OF SQUARES DETECTED: ', totalnumber)
-        
         # Loop thorugh all the squares and type the number on them
         if method == str(1):
             selectTypeTool()
             for index, squarelocation in enumerate(squares):
                 write_number_on_square(index+1, squarelocation, squaresize)
             locateAndCountSquares(canvaslocation)
-        # Loop through all the found squares and send to draw number function
+        # Loop through all the found squares and draw numbers on them
         if method == str(2):
             selectBrushTool()
             for index, squarelocation in enumerate(squares):
@@ -165,15 +167,14 @@ def locateAndCountSquares(canvaslocation):
         # Mess up the canvas and count the squares again
         if method == str(3):
             if notedpad_enabled: openNotePadAndType('TOTAL NUMBER OF SQUARES DETECTED: ' + str(totalnumber))   
-            print('\n\nTOTAL NUMBER OF SQUARES DETECTED: ', totalnumber)
-            messUpTheCanvas(canvaslocation, squaresize)
+            mess_up_the_canvas(canvaslocation, squaresize)
             locateAndCountSquares(canvaslocation)
 
     else:
         # if no squares found, close paint
         if notedpad_enabled: openNotePadAndType(
             'NO SQUARES FOUND AFTER DRAWING/TYPING ON THEM, CLOSING PAINT')
-        print('NO SQUARES FOUND AFTER MESSING UP THE CANVAS, CLOSING PAINT\n\n')
+        print('NO SQUARES FOUND AFTER DRAWING/TYPING ON THEM, CLOSING PAINT\n\n')
         pyautogui.hotkey('alt', 'f4')
         pyautogui.press('right')
         pyautogui.press('enter')

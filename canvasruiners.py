@@ -1,10 +1,10 @@
 import pyautogui
 from toolselectors import selectBrushTool
 import random
-import time
 
 # Ruin canvas by writing the number on squares
 def write_number_on_square(number, squarelocation, squaresize):
+
     # move the mouse to the center of the square
     pyautogui.moveTo(squarelocation[0] + squaresize//2, squarelocation[1] + squaresize//2)
     pyautogui.doubleClick()
@@ -15,9 +15,8 @@ def write_number_on_square(number, squarelocation, squaresize):
 
 # Ruin canvas by drawing the numbers on squares
 def draw_number_on_canvas(number, squarelocation, squaresize):
-    print(squarelocation)
     
-    # define the numbers as a list of coordinates
+    # define the numbers as a list of coordinates 
     numbers_to_draw = [
         ((100, 100), (200, 100), (200, 200), (100, 200), (100, 100)),  # 0
         ((150, 100), (150, 200)),  # 1
@@ -40,12 +39,11 @@ def draw_number_on_canvas(number, squarelocation, squaresize):
     for point in numbers_to_draw[number][1:]:
         pyautogui.moveTo(squarelocation[0] - squaresize//2 +
                          point[0], squarelocation[1] - squaresize//2 + point[1])
-        time.sleep(0.05)
 
     pyautogui.mouseUp()
 
 # Ruin canvas by drawing lines on it
-def messUpTheCanvas(canvaslocation, squaresize):
+def mess_up_the_canvas(canvaslocation, squaresize):
     # Get the canvas in the same way we got the squares
     safetymargins = 10
     x, y = canvaslocation[0], canvaslocation[1]

@@ -2,7 +2,7 @@
 
 The purpose of this program is to 
 1. open MSPaint 
-2. draw squares randomly on canvas 
+2. draw squares randomly on canvas (take screenshot of first image for later reference)
 3. count them by image recognition 
 4. draw something on the canvas so the squares become unrecognizible 
 5. try to count them again 
