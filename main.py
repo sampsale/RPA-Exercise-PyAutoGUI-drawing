@@ -29,6 +29,7 @@ def openMSPaint():
     drawSquares()
 
 
+
 # Open Paint with image recognition
 def openMSPaintWithImageRecognition():
     # Press windows key, type paint
